@@ -8,26 +8,29 @@ import java.util.StringTokenizer;
 
 public class Baekjoon_1068 {
   static class Node {
-    int where;
-    ArrayList<Node> neighbor; // 0은 항상 부모
+    int parent;
+    int index;
+    ArrayList<Node> children;
 
-    Node(Node parent) {
-      this.neighbor = new ArrayList<>();
-      this.where = parent == null ? 0 : parent.neighbor.size();
-      this.neighbor.add(parent);
+    Node(int index, int parent) {
+      // 부모가 먼저 선언이 안될수도 있다 -> where을 지정할 수 없다. -> where 삭제
+      // 부모가 먼저 선언이 안될수도 있다 -> 부모를 지정할 수 없다 -> neighbor을 children으로 수정
+      // 부모가 먼저 선언이 안될수도 있다 -> 부모를 찾을 수 없다. -> 탐색으로 몇번쨰 index인지 찾아야한다 -> index 추가
+      this.index = index;
+      this.parent = parent;
+      children = new ArrayList<>();
     }
   }
 
   static ArrayList<Node> leafList = new ArrayList<>();
 
   static void findLeaf(Node current) {
-    if (current == null) return;
-    if (current.neighbor.size() == 1) {
+    if (current.children.size() == 0) {
       leafList.add(current);
       return;
     }
-    for (int i = 1; i < current.neighbor.size(); i++) { // 부모는 더이상 leaf노드가 될수 없으므로 0은 제외
-      findLeaf(current.neighbor.get(i));
+    for (int i = 0; i < current.children.size(); i++) { // 부모는 더이상 leaf노드가 될수 없으므로 0은 제외
+      findLeaf(current.children.get(i));
     }
   }
 
@@ -40,34 +43,48 @@ public class Baekjoon_1068 {
 
     Node[] nodes = new Node[n];
 
-    Node head = new Node(null);
-    nodes[0] = head;
-
-
     str = br.readLine();
     st = new StringTokenizer(str);
+
+    ArrayList<ArrayList<Node>> childrenList = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+      childrenList.add(new ArrayList<>());
+    }
+
+    int head = 0;
 
     // 트리 초기화
     for (int i = 0; i < n; i++) {
       int parent = Integer.parseInt(st.nextToken()); // 부모 노드 인덱스
-      if (parent == -1) continue;
-
-      Node newNode = new Node(nodes[parent]); // 부모를 설정한 새로운 노드 생성
-
-      nodes[parent].neighbor.add(newNode); // 부모 노드에 자식 노드 추가
+      Node newNode = new Node(i, parent); // 부모를 설정한 새로운 노드 생성
       nodes[i] = newNode; // 자식 노드 인덱스 위치에 노드 추가
+      if (parent == -1) head = i; // 루트 노드면 루트로 지정
+      else childrenList.get(parent).add(newNode); // 자식 노드면 부모의 자식으로 지정
+    }
+
+    for (int i = 0; i < n; i++) { // 자식 노드 지정
+      nodes[i].children = childrenList.get(i);
     }
 
     str = br.readLine();
     st = new StringTokenizer(str);
-    int index = Integer.parseInt(st.nextToken());
+    int remove = Integer.parseInt(st.nextToken());
 
-    Node parent = nodes[index].neighbor.get(0);
+    if (remove == head) {
+      System.out.println(0);
+      return;
+    }
 
-    if (parent == null) head = null;
-    else parent.neighbor.set(nodes[index].where, null);
+    Node parent = nodes[nodes[remove].parent];
 
-    findLeaf(head);
+    for (int i = 0; i < parent.children.size(); i++) {
+      if (parent.children.get(i).index == remove) { // remove할 노드 삭제
+        parent.children.remove(i);
+        break;
+      }
+    }
+
+    findLeaf(nodes[head]);
 
     System.out.println(leafList.size());
   }
