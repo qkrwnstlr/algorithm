@@ -1,25 +1,28 @@
 package math;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.Arrays;
 
 public class Baekjoon_6588 {
+  static int MAX = 1000000;
   static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-  static HashMap<Integer, Integer> cash = new HashMap<>();
+  static boolean[] cash = new boolean[MAX + 1];
 
-  static boolean isPrime(int n) {
-    for (int i = 2; i * i < n; i++) if (n % i == 0) return false; // 나누어 떨어지면 false
-    return true; // 아무것도 나누어 떨어지지 않으면 true
-  }
-
-  static void findPrime() {
-    for (int i = 2; i < 100000; i++) if (isPrime(i)) cash.put(i, i); // 2부터 10만까지 모든 소수를 구함
+  static void Eratosthenes() {
+    Arrays.fill(cash, true);
+    // 2부터 100만까지 모든 소수를 구함
+    for (int i = 2; i <= MAX; i++) {
+      for (int j = i * 2; j <= MAX; j += i) {
+        if (!cash[j]) continue;
+        cash[j] = false;
+      }
+    }
   }
 
   static int goldBach(int n) {
-    for (int i : cash.values())
-      if (cash.get(n - i) != null) return i; // 입력받은 값을 소수에서 뺏을때 그 수가 소수인지 확인
+    for (int i = 2; i <= n / 2; i++)
+      if (cash[i] && cash[n - i]) return i; // 입력받은 값을 소수에서 뺏을때 그 수가 소수인지 확인
     return 0; // 끝까지 없으면 0 반환
   }
 
@@ -38,7 +41,7 @@ public class Baekjoon_6588 {
 
   static void result() throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    findPrime();
+    Eratosthenes();
     while (true) {
       String str = br.readLine();
       int n = Integer.parseInt(str);
