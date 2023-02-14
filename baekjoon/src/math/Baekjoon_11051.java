@@ -13,6 +13,11 @@ public class Baekjoon_11051 {
     int n = Integer.parseInt(st.nextToken());
     int k = Integer.parseInt(st.nextToken());
 
+    if(k == 0) {
+      System.out.println(1);
+      return;
+    }
+
     int[][] cash = new int[1000][1000];
     for (int i = 0; i < n; i++) {
       cash[i][i] = 1;
