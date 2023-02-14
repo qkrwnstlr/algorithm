@@ -1,12 +1,12 @@
 package math;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Baekjoon_6588 {
   static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-  static ArrayList<Integer> cash = new ArrayList<>();
+  static HashMap<Integer, Integer> cash = new HashMap<>();
 
   static boolean isPrime(int n) {
     for (int i = 2; i * i < n; i++) if (n % i == 0) return false; // 나누어 떨어지면 false
@@ -14,13 +14,12 @@ public class Baekjoon_6588 {
   }
 
   static void findPrime() {
-    for (int i = 2; i < 100000; i++) if (isPrime(i)) cash.add(i); // 2부터 10만까지 모든 소수를 구함
+    for (int i = 2; i < 100000; i++) if (isPrime(i)) cash.put(i, i); // 2부터 10만까지 모든 소수를 구함
   }
 
   static int goldBach(int n) {
-    for (int i : cash) 
-      for (int j = cash.size() - 1; j >= 0; j--)
-        if (cash.get(j) == n - i) return i; // 입력받은 값을 소수에서 뺏을때 그 수가 소수인지 확인
+    for (int i : cash.values())
+      if (cash.get(n - i) != null) return i; // 입력받은 값을 소수에서 뺏을때 그 수가 소수인지 확인
     return 0; // 끝까지 없으면 0 반환
   }
 
