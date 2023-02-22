@@ -49,12 +49,13 @@ public class Baekjoon_13415 {
     Arrays.sort(list, Comparator.reverseOrder());
 
     int maxIndex = -1; // index가 maxIndex보다 작으면 정렬할 가치가 없다.
-    ArrayData lastArrayData = list[0]; // 마지막에 정렬된 상태를 저장
+    ArrayData lastArrayData = new ArrayData(0, 0, (char) 0); // 마지막에 정렬된 상태를 저장
     for (int i = 0; i < k * 2; i++) {
-      if (list[i].index >= maxIndex) {
-        if (list[i].location == 'a' && list[i].index == maxIndex) continue;
-        maxIndex = list[i].index;
-        if (lastArrayData.value >= list[i].value && lastArrayData.location != list[i].location) { // 이미 정렬이 되어있는 상태이면 O(n)으로 처리 가능
+      if (list[i].index < maxIndex) continue;
+      if (list[i].location == 'a' && list[i].index == maxIndex) continue; // 같은 index의 b가 먼저 있었으면 안함
+      maxIndex = list[i].index;
+      if (lastArrayData.value >= list[i].value) { // 이미 정렬이 되어있는 상태이면 O(n)으로 처리 가능
+        if (lastArrayData.location != list[i].location) {
           int currentValue = list[i].value - 1;
           for (int j = 0; j <= currentValue / 2; j++) {
             Short temp = ints[j];
@@ -62,12 +63,12 @@ public class Baekjoon_13415 {
             ints[currentValue - j] = temp;
           }
           lastArrayData = list[i];
-          continue;
         }
-        if (list[i].location == 'a') Arrays.sort(ints, 0, list[i].value); // 정렬을 보장할 수 없으면 각 location에 맞는 동작 수행
-        else Arrays.sort(ints, 0, list[i].value, Comparator.reverseOrder());
-        lastArrayData = list[i];
+        continue;
       }
+      if (list[i].location == 'a') Arrays.sort(ints, 0, list[i].value); // 정렬을 보장할 수 없으면 각 location에 맞는 동작 수행
+      else Arrays.sort(ints, 0, list[i].value, Comparator.reverseOrder());
+      lastArrayData = list[i];
     }
 
     StringBuilder sb = new StringBuilder();
