@@ -30,14 +30,13 @@ public class Baekjoon_13415 {
 
   static void result() throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    StringBuilder sb = new StringBuilder();
 
     int n = Integer.parseInt(br.readLine());
-    Integer[] ints = new Integer[n];
+    Short[] ints = new Short[n];
 
     String str = br.readLine();
     StringTokenizer st = new StringTokenizer(str);
-    for (int i = 0; i < n; i++) ints[i] = Integer.parseInt(st.nextToken());
+    for (int i = 0; i < n; i++) ints[i] = Short.parseShort(st.nextToken());
     int k = Integer.parseInt(br.readLine());
 
     ArrayData[] list = new ArrayData[k * 2];
@@ -50,7 +49,7 @@ public class Baekjoon_13415 {
     Arrays.sort(list, Comparator.reverseOrder());
 
     int maxIndex = -1; // index가 maxIndex보다 작으면 정렬할 가치가 없다.
-    ArrayData lastArrayData = new ArrayData(0, 0, 'a'); // 마지막에 정렬된 상태를 저장
+    ArrayData lastArrayData = list[0]; // 마지막에 정렬된 상태를 저장
     for (int i = 0; i < k * 2; i++) {
       if (list[i].index >= maxIndex) {
         if (list[i].location == 'a' && list[i].index == maxIndex) continue;
@@ -58,7 +57,7 @@ public class Baekjoon_13415 {
         if (lastArrayData.value >= list[i].value && lastArrayData.location != list[i].location) { // 이미 정렬이 되어있는 상태이면 O(n)으로 처리 가능
           int currentValue = list[i].value - 1;
           for (int j = 0; j <= currentValue / 2; j++) {
-            int temp = ints[j];
+            Short temp = ints[j];
             ints[j] = ints[currentValue - j];
             ints[currentValue - j] = temp;
           }
@@ -71,13 +70,12 @@ public class Baekjoon_13415 {
       }
     }
 
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < n; i++) sb.append(ints[i]).append(" ");
     System.out.println(sb);
   }
 
   public static void main(String[] args) throws IOException {
-    String str = "1000000";
-    System.out.println(Short.parseShort(str));
     result();
   }
 }
