@@ -6,32 +6,27 @@ public class Baekjoon_23564 {
   static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
   static StringBuilder sbCharacter = new StringBuilder(); // 문자열 저장
   static  StringBuilder sbCount = new StringBuilder(); // 개수 저장
-  static String str; // 입력받은 T
+  static char[] characters;
+  static int index = 0; // characters에 접근할 다음 index
 
-  static char stringPop() { // String에서 맨 앞에 글자를 반환하고 String은 하나 삭제
-    char value = str.charAt(0);
-    str = str.replaceFirst(Character.toString(value), ""); // replace first고 charAt(0)을 지우니까 O(1)이겠지...? 설마 남은 문자열을 다 복사하나..?
-    return value;
+
+  static char stringPop() { // 다음 문자를 반환하고 index를 증가시켜 넘김
+    return characters[index++];
   }
 
   static void result() throws IOException {
-    str = br.readLine();
+    characters = br.readLine().toCharArray(); // 입력받은 문자열을 character array로 변환
 
     int accLength = 0; // 현재까지 확인된 반복되는 문자열의 길이
 
-    char beforeCharacter = stringPop();
-    int beforeCount = 1;
+    char beforeCharacter = stringPop(); // 초기값 설정
+    int beforeCount = 1; // 초기갑 설정
     sbCharacter.append(beforeCharacter);
 
     while (true) {
-      // substring이 오래 걸리는 것으로 보임
-      // substring은 자르고 남은 문자열을 다 복사하는 듯
-      // 1. char list 로 만들고 index로 접근..?
-      // 2, queue에 넣고 하나씩 pop?
-      // 3. 반복되는 문자열을 저장해놓고 replaceFirst로 제거?
-      str = str.substring(accLength); // 반복되고 있는 문자를 제거함
+      index += accLength; // 반복되고 있는 문자를 index를 증가시켜 넘김
 
-      if (str.isEmpty()) { // 문자열이 끝날때 까지 반복
+      if (characters.length == index) { // 문자열이 끝날때 까지 반복
         sbCount.append(beforeCount).append(" "); // 문자열이 끝났으면 마지막 출력을 안하므로 직접 해줌
         break;
       }
