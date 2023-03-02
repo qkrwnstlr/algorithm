@@ -49,17 +49,16 @@ public class Baekjoon_7576 {
     }
 
     int count = -1;
+
     while (!currentQueue.isEmpty()) {
       next();
       count++;
     }
 
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < m; j++) {
-        if (box[i * m + j] == 0) {
-          count = -1;
-          break;
-        }
+    for (int i = 0; i < n * n; i++) {
+      if (box[i] == 0) {
+        count = -1;
+        break;
       }
     }
     System.out.println(count);
