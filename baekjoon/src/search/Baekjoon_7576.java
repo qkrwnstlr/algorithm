@@ -16,17 +16,18 @@ public class Baekjoon_7576 {
 
   public static void setVisited(int index) {
     box[index] = 1;
-    if (index / m != n - 1 && box[index + m] == 0) currentQueue.add(index + m);
-    if (index / m != 0 && box[index - m] == 0) currentQueue.add(index - m);
-    if (index % m != m - 1 && box[index + 1] == 0) currentQueue.add(index + 1);
-    if (index % m != 0 && box[index - 1] == 0) currentQueue.add(index - 1);
+    currentQueue.add(index);
   }
 
   public static void next() {
     beforeQueue = currentQueue;
     currentQueue = new LinkedList<>();
     while (!beforeQueue.isEmpty()) {
-      setVisited(beforeQueue.remove());
+      int current = beforeQueue.remove();
+      if (current / m != n - 1 && box[current + m] == 0) setVisited(current + m);
+      if (current / m != 0 && box[current - m] == 0) setVisited(current - m);
+      if (current % m != m - 1 && box[current + 1] == 0) setVisited(current + 1);
+      if (current % m != 0 && box[current - 1] == 0) setVisited(current - 1);
     }
   }
 
