@@ -16,7 +16,6 @@ public class Main {
       st = new StringTokenizer(br.readLine());
       for (int j = 0; j < M; j++) land[i * M + j] = Integer.parseInt(st.nextToken());
     }
-    Arrays.sort(land);
     for (int i = 0; i < 257; i++) {
       int mine = 0;
       int build = 0;
