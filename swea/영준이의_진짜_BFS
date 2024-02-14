@@ -1,0 +1,117 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+class Solution {
+	BufferedReader br;
+	StringBuilder sb;
+	StringTokenizer st;
+
+	int N;
+	long result;
+	Queue<Node> queue;
+	Node[] nodePool;
+	Map<String, Integer> lcas;
+
+	void solution() throws IOException {
+		br = new BufferedReader(new InputStreamReader(System.in));
+		sb = new StringBuilder();
+
+		int T = Integer.parseInt(br.readLine());
+		for (int testCase = 1; testCase <= T; testCase++) {
+			N = Integer.parseInt(br.readLine());
+			nodePool = new Node[N + 1];
+			for (int i = 1; i <= N; i++) {
+				nodePool[i] = new Node(i);
+			}
+
+			st = new StringTokenizer(br.readLine());
+
+			for (int i = 2; i <= N; i++) {
+				Node parent = nodePool[Integer.parseInt(st.nextToken())];
+				Node child = nodePool[i];
+				child.setParent(parent);
+				parent.addChildren(child);
+			}
+
+			bfs();
+
+			sb.append("#").append(testCase).append(" ").append(result).append("\n");
+		}
+
+		System.out.println(sb);
+		br.close();
+	}
+
+	void bfs() {
+		initBfs();
+		Node before = nodePool[1];
+
+		while (!queue.isEmpty()) {
+			Node current = queue.poll();
+			Node lca = nodePool[findLCA(before, current)];
+			result += before.depth + current.depth - lca.depth * 2;
+			current.children.forEach((n) -> queue.add(n));
+			before = current;
+		}
+	}
+
+	int findLCA(Node n1, Node n2) {
+		if (n1.depth < n2.depth) {
+			Node temp = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+
+		String key = n1.value + ", " + n2.value;
+
+		if (lcas.containsKey(key)) {
+			return lcas.get(key);
+		}
+
+		lcas.put(key, findLCA(n1.parent, n2));
+
+		return lcas.get(key);
+	}
+
+	void initBfs() {
+		result = 0;
+		queue = new LinkedList<>();
+		queue.add(nodePool[1]);
+		lcas = new HashMap<>();
+		for (int i = 1; i <= N; i++) {
+			lcas.put(i + ", " + i, i);
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		new Solution().solution();
+	}
+}
+
+class Node {
+	int value, depth;
+	Node parent;
+	List<Node> children;
+
+	Node(int value) {
+		this.value = value;
+		this.children = new ArrayList<>();
+	}
+
+	void setParent(Node parent) {
+		this.parent = parent;
+		this.depth = parent.depth + 1;
+	}
+
+	void addChildren(Node child) {
+		this.children.add(child);
+	}
+}
