@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class Solution {
   public static void main(String[] args) throws IOException {
+    System.setIn(new FileInputStream("res/input.txt"));
     new Solution().run();
   }
 
@@ -16,9 +18,9 @@ public class Solution {
   int[][] rotations;
 
   void init() throws IOException {
+    result = 0;
     N = 4;
     K = Integer.parseInt(br.readLine());
-    result = 0;
     magnets = new int[N + 1][8];
     top = new int[N + 1];
     for (int i = 1; i <= N; i++) {
@@ -47,16 +49,8 @@ public class Solution {
   }
 
   void solution() {
-    for (int i = 0; i < K; i++) {
-      int target = rotations[i][0];
-      int direction = rotations[i][1];
-      rotate(target, direction);
-    }
-    for (int j = 1; j <= N; j++) {
-      if (magnets[j][top[j]] == 1) {
-        result += (2 << j - 1) / 2;
-      }
-    }
+    for (int i = 0; i < K; i++) rotate(rotations[i][0], rotations[i][1]);
+    for (int i = 1; i <= N; i++) result += magnets[i][top[i]] << (i - 1);
   }
 
   void rotate(int target, int direction) {
@@ -71,9 +65,7 @@ public class Solution {
       distances[current + 1] = -distances[current];
     }
 
-    for (int i = 1; i <= N; i++) {
-      top[i] = movedIndex(i, distances[i]);
-    }
+    for (int i = 1; i <= N; i++) top[i] = movedIndex(i, distances[i]);
   }
 
   int movedIndex(int target, int distance) {
