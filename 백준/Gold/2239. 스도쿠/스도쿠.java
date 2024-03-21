@@ -15,27 +15,22 @@ public class Main {
 	BufferedReader br;
 	StringTokenizer st;
 	int[][] table;
-	List<Set<Integer>> rSets, cSets, bSets;
+	boolean[][] rSets, cSets, bSets;
 
 	void init() throws IOException {
 		table = new int[9][9];
-		rSets = new ArrayList<>();
-		cSets = new ArrayList<>();
-		bSets = new ArrayList<>();
-		for (int i = 0; i < 9; i++) {
-			rSets.add(new HashSet<>());
-			cSets.add(new HashSet<>());
-			bSets.add(new HashSet<>());
-		}
+		rSets = new boolean[9][10];
+		cSets = new boolean[9][10];
+		bSets = new boolean[9][10];
 
 		for (int r = 0; r < 9; r++) {
 			String line = br.readLine();
 			for (int c = 0; c < 9; c++) {
 				table[r][c] = line.charAt(c) - '0';
 				if (table[r][c] == 0) continue;
-				rSets.get(r).add(table[r][c]);
-				cSets.get(c).add(table[r][c]);
-				bSets.get((r / 3) * 3 + c / 3).add(table[r][c]);
+				rSets[r][table[r][c]] = true;
+				cSets[c][table[r][c]] = true;
+				bSets[(r / 3) * 3 + c / 3][table[r][c]] = true;
 			}
 		}
 	}
@@ -64,15 +59,15 @@ public class Main {
 		int c = index % 9;
 		if (table[r][c] != 0) return setValue(index + 1);
 		for (int i = 1; i <= 9; i++) {
-			if (rSets.get(r).contains(i) || cSets.get(c).contains(i) || bSets.get((r / 3) * 3 + c / 3).contains(i)) continue;
-			rSets.get(r).add(i);
-			cSets.get(c).add(i);
-			bSets.get((r / 3) * 3 + c / 3).add(i);
+			if (rSets[r][i] || cSets[c][i] || bSets[(r / 3) * 3 + c / 3][i]) continue;
+			rSets[r][i] = true;
+			cSets[c][i] = true;
+			bSets[(r / 3) * 3 + c / 3][i] = true;
 			table[r][c] = i;
 			if (!setValue(index + 1)) {
-				rSets.get(r).remove(i);
-				cSets.get(c).remove(i);
-				bSets.get((r / 3) * 3 + c / 3).remove(i);
+				rSets[r][i] = false;
+				cSets[c][i] = false;
+				bSets[(r / 3) * 3 + c / 3][i] = false;
 				table[r][c] = 0;
 			} else {
 				return true;
