@@ -1,57 +1,64 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
-  static int N, M;
-  static long[][] distance;
+	public static void main(String[] args) throws IOException {
+		new Main().run();
+	}
 
-  public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    StringTokenizer st = new StringTokenizer(br.readLine());
+	int N, M;
+	long result;
+	long[][] dist;
+	boolean isPossible;
 
-    N = Integer.parseInt(st.nextToken());
-    M = Integer.parseInt(st.nextToken());
+	void init() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		dist = new long[N][N];
+		for (int i = 0; i < N; i++) {
+			Arrays.fill(dist[i], Integer.MAX_VALUE);
+			dist[i][i] = 0;
+		}
+		for (int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine());
+			int u = Integer.parseInt(st.nextToken()) - 1;
+			int v = Integer.parseInt(st.nextToken()) - 1;
+			int w = Integer.parseInt(st.nextToken());
+			dist[u][v] = w;
+		}
+		result = Long.MAX_VALUE;
+	}
 
-    distance = new long[N + 1][N + 1];
-    for (int i = 1; i <= N; i++) {
-      Arrays.fill(distance[i], Long.MAX_VALUE);
-      distance[i][i] = 0;
-    }
+	void run() throws IOException {
+		init();
+		solution();
+		System.out.println(result == Long.MAX_VALUE ? -1 : result);
+	}
 
-    for (int i = 0; i < M; i++) {
-      st = new StringTokenizer(br.readLine());
-      int A = Integer.parseInt(st.nextToken());
-      int B = Integer.parseInt(st.nextToken());
-      long C = Long.parseLong(st.nextToken());
-      distance[A][B] = Long.min(distance[A][B], C);
-    }
+	void solution() {
+		floydWarshall();
 
-    FloydWarshall();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (i != j && dist[i][j] != Integer.MAX_VALUE && dist[j][i] != Integer.MAX_VALUE) {
+					result = Math.min(result, dist[i][j] + dist[j][i]);
+				}
+			}
+		}
+	}
 
-    Long result = Long.MAX_VALUE;
-
-    for (int i = 1; i <= N; i++) {
-      for (int j = 1; j <= N; j++) {
-        if(i != j && distance[i][j] != Long.MAX_VALUE && distance[j][i] != Long.MAX_VALUE) {
-          result = Long.min(result, distance[i][j] + distance[j][i]);
-        }
-      }
-    }
-
-    System.out.println(result == Long.MAX_VALUE ? -1 : result);
-  }
-
-  static void FloydWarshall() {
-    for (int i = 1; i <= N; i++) {
-      for (int j = 1; j <= N; j++) {
-        if (distance[j][i] == Long.MAX_VALUE) continue;
-        for (int k = 1; k <= N; k++) {
-          if (distance[i][k] == Long.MAX_VALUE) continue;
-          distance[j][k] = Long.min(distance[j][i] + distance[i][k], distance[j][k]);
-        }
-      }
-    }
-  }
+	void floydWarshall() {
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+				}
+			}
+		}
+	}
 }
