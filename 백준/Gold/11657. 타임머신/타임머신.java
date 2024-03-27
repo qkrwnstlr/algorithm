@@ -1,79 +1,73 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
-  static int N, M;
-  static long[] distance;
-  static Node[] graph;
+	public static void main(String[] args) throws IOException {
+		new Main().run();
+	}
 
-  public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    StringBuilder sb = new StringBuilder();
+	int N, M;
+	boolean isPossible;
+	long[] dist;
+	Node[] graph;
 
-    N = Integer.parseInt(st.nextToken());
-    M = Integer.parseInt(st.nextToken());
+	void init() throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		dist = new long[N];
+		Arrays.fill(dist, Integer.MAX_VALUE);
+		graph = new Node[M];
+		for (int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine());
+			int u = Integer.parseInt(st.nextToken()) - 1;
+			int v = Integer.parseInt(st.nextToken()) - 1;
+			int w = Integer.parseInt(st.nextToken());
+			graph[i] = new Node(u, v, w);
+		}
+	}
 
-    graph = new Node[M];
+	void run() throws IOException {
+		init();
+		solution();
+		StringBuffer sb = new StringBuffer();
+		if (isPossible) for (int i = 1; i < N; i++) sb.append(dist[i] == Integer.MAX_VALUE ? -1 : dist[i]).append("\n");
+		else sb.append(-1);
+		System.out.println(sb);
+	}
 
-    for (int i = 0; i < M; i++) {
-      st = new StringTokenizer(br.readLine());
-      int A = Integer.parseInt(st.nextToken());
-      int B = Integer.parseInt(st.nextToken());
-      long C = Long.parseLong(st.nextToken());
-
-      graph[i] = new Node(A, B, C);
-    }
-
-    if (bellmanFord()) {
-      for (int i = 2; i <= N; i++) {
-        sb.append(distance[i] == Long.MAX_VALUE ? -1 : distance[i]).append("\n");
-      }
-    } else {
-      sb.append(-1).append("\n");
-    }
-
-    System.out.println(sb);
-  }
-
-  static boolean bellmanFord() {
-    distance = new long[N + 1];
-    Arrays.fill(distance, Long.MAX_VALUE);
-
-    distance[1] = 0;
-
-    for (int i = 0; i <= N; i++) {
-      for (int j = 0; j < M; j++) {
-        int curr = graph[j].start;
-        int next = graph[j].end;
-        long cost = graph[j].distance;
-
-        if(distance[curr] == Long.MAX_VALUE) continue;
-        if(distance[next] > distance[curr] + cost) {
-          if(i == N) return false;
-          distance[next] = distance[curr] + cost;
-        }
-      }
-    }
-
-    return true;
-  }
+	void solution() {
+		dist[0] = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				Node node = graph[j];
+				if (dist[node.u] == Integer.MAX_VALUE) continue;
+				if (dist[node.v] > dist[node.u] + node.w) {
+					dist[node.v] = dist[node.u] + node.w;
+				}
+			}
+		}
+		for (int j = 0; j < M; j++) {
+			Node node = graph[j];
+			if (dist[node.u] == Integer.MAX_VALUE) continue;
+			if (dist[node.v] > dist[node.u] + node.w) {
+				return;
+			}
+		}
+		isPossible = true;
+	}
 }
 
-class Node implements Comparable<Node> {
-  int start, end;
-  long distance;
+class Node {
+	int u, v, w;
 
-  Node(int start, int end, long distance) {
-    this.start = start;
-    this.end = end;
-    this.distance = distance;
-  }
-
-  @Override
-  public int compareTo(Node o) {
-    return Long.compare(this.distance, o.distance);
-  }
+	Node(int u, int v, int w) {
+		this.u = u;
+		this.v = v;
+		this.w = w;
+	}
 }
