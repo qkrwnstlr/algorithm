@@ -67,10 +67,11 @@ public class Main {
 		while (!q.isEmpty()) {
 			Edge e = q.poll();
 			int u = e.v;
-			if (visited[u]) continue;
-			visited[u] = true;
+            
+            if(dist[e.v] < e.w) continue; 
+			
 			graph.get(u).keySet().forEach((v) -> {
-				if (visited[v] || dist[v] <= dist[u] + graph.get(u).get(v)) return;
+				if (dist[v] <= dist[u] + graph.get(u).get(v)) return;
 				dist[v] = dist[u] + graph.get(u).get(v);
 				q.add(new Edge(v, dist[v]));
 			});
