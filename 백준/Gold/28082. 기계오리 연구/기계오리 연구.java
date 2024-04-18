@@ -20,7 +20,7 @@ public class Main {
     N = Integer.parseInt(st.nextToken());
     K = Integer.parseInt(st.nextToken());
     I = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
-    M = K * Arrays.stream(I).max().getAsInt() + 2;
+    M = Arrays.stream(I).sorted().skip(N - K).sum() + 2;
     dp = new int[M];
     Arrays.fill(dp, Integer.MAX_VALUE);
   }
