@@ -19,8 +19,8 @@ public class Main {
     result = 0;
     N = Integer.parseInt(st.nextToken());
     K = Integer.parseInt(st.nextToken());
-    M = K * 500 + 2;
     I = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+    M = K * Arrays.stream(I).max().getAsInt() + 2;
     dp = new int[M];
     Arrays.fill(dp, Integer.MAX_VALUE);
   }
@@ -41,9 +41,7 @@ public class Main {
   void solution() {
     for (int i = 0; i < N; i++) {
       for (int j = M - 1; j > 0; j--) {
-        if (j + I[i] < M && dp[j] < K) {
-          dp[j + I[i]] = Math.min(dp[j] + 1, dp[j + I[i]]);
-        }
+        if (dp[j] < K) dp[j + I[i]] = Math.min(dp[j] + 1, dp[j + I[i]]);
       }
       dp[I[i]] = 1;
     }
