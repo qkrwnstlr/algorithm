@@ -1,33 +1,60 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
-  static int N;
-  static int M;
   public static void main(String[] args) throws IOException {
-    BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-    String[] read = sc.readLine().split(" ");
-    N = Integer.parseInt(read[0]);
-    M = Integer.parseInt(read[1]);
-    String[] boarder = new String[N * M];
-    for(int i = 0; i < N; i++) {
-      read = sc.readLine().split("");
-      for(int j = 0; j < M; j++) boarder[i * M + j] = read[j];
-    }
-    int result = Integer.MAX_VALUE;
-    for(int i = 0; i <= N - 8; i++) {
-      for(int j = 0; j <= M - 8; j++) {
-        int temp = Math.min(count(boarder, "W", "B", i, j), count(boarder, "B", "W", i, j));
-        result = Math.min(result, temp);
-      }
-    }
-    System.out.println(result);
+    new Main().run();
   }
 
-  static int count(String[] boarder, String first, String next, int startX, int startY) {
+  BufferedReader br;
+  StringBuilder sb;
+  int N, M, result;
+  char[][] matrix;
+  int BOARD_SIZE = 8;
+
+  void init() throws IOException {
+    result = Integer.MAX_VALUE;
+    StringTokenizer st = new StringTokenizer(br.readLine());
+    N = Integer.parseInt(st.nextToken());
+    M = Integer.parseInt(st.nextToken());
+    matrix = new char[N][M];
+    for (int y = 0; y < N; y++) matrix[y] = br.readLine().toCharArray();
+  }
+
+  void run() throws IOException {
+    br = new BufferedReader(new InputStreamReader(System.in));
+    sb = new StringBuilder();
+
+    init();
+    solution();
+    sb.append(result).append("\n");
+
+    System.out.println(sb);
+
+    br.close();
+  }
+
+  void solution() {
+    for (int y = 0; y <= N - BOARD_SIZE; y++) {
+      for (int x = 0; x <= M - BOARD_SIZE; x++) {
+        result = Math.min(result, count(y, x));
+      }
+    }
+  }
+
+  int count(int startY, int startX) {
+    return Math.min(count(startY, startX, 'B', 'W'), count(startY, startX, 'W', 'B'));
+  }
+
+  int count(int startY, int startX, char first, char next) {
     int result = 0;
-    for(int i = startX; i < startX + 8; i++) for(int j = startY; j < startY + 8; j++) {
-      if((i + j) % 2 == 0 && !boarder[M * i + j].equals(first)) result++;
-      if((i + j) % 2 == 1 && !boarder[M * i + j].equals(next)) result++;
+    for (int y = 0; y < BOARD_SIZE; y++) {
+      for (int x = 0; x < BOARD_SIZE; x++) {
+        if ((y + x) % 2 == 0 && matrix[startY + y][startX + x] != first) result++;
+        if ((y + x) % 2 == 1 && matrix[startY + y][startX + x] != next) result++;
+      }
     }
     return result;
   }
