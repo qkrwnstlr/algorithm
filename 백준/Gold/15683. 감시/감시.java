@@ -11,13 +11,16 @@ public class Main {
 
   BufferedReader br;
   StringBuilder sb;
-  int N, M, result, wall;
+  int N, M, result;
   int[][] office;
   ArrayList<Integer> cctv;
+  int[] dy = {-1, 0, 1, 0};
+  int[] dx = {0, 1, 0, -1};
+  long bit;
 
   void init() throws IOException {
     result = Integer.MAX_VALUE;
-    wall = 0;
+    bit = 0;
     StringTokenizer st = new StringTokenizer(br.readLine());
     N = Integer.parseInt(st.nextToken());
     M = Integer.parseInt(st.nextToken());
@@ -27,8 +30,8 @@ public class Main {
       st = new StringTokenizer(br.readLine());
       for (int x = 0; x < M; x++) {
         office[y][x] = Integer.parseInt(st.nextToken());
+        if (office[y][x] > 0) bit = turnOnBit(bit, y * M + x);
         if (office[y][x] > 0 && office[y][x] < 6) cctv.add(y * M + x);
-        if (office[y][x] == 6) wall++;
       }
     }
   }
@@ -47,146 +50,74 @@ public class Main {
   }
 
   void solution() {
-    dfs(0, 0);
+    dfs(0, bit);
   }
 
   void dfs(int depth, long bit) {
     if (depth == cctv.size()) {
-      result = Math.min(result, N * M - Long.bitCount(bit) - wall);
+      result = Math.min(result, N * M - Long.bitCount(bit));
       return;
     }
 
     int cctvY = cctv.get(depth) / M;
     int cctvX = cctv.get(depth) % M;
-    for (int d = 1; d <= 4; d++) dfs(depth + 1, runCCTV(cctvY, cctvX, d, bit));
-  }
-
-  long runCCTV(int cctvY, int cctvX, int direction, long bit) {
-    long result = bit;
     switch (office[cctvY][cctvX]) {
-      case 1: {
-        switch (direction) {
-          case 1:
-            result = setUp(cctvY, cctvX, result);
-            break;
-          case 2:
-            result = setRight(cctvY, cctvX, result);
-            break;
-          case 3:
-            result = setDown(cctvY, cctvX, result);
-            break;
-          case 4:
-            result = setLeft(cctvY, cctvX, result);
-            break;
+      case 1:
+        for (int i = 0; i < dx.length; i++) {
+          dfs(depth + 1, cover(cctvY, cctvX, dy[i], dx[i], bit));
         }
         break;
-      }
-      case 2: {
-        switch (direction) {
-          case 1:
-          case 3:
-            result = setUp(cctvY, cctvX, result);
-            result = setDown(cctvY, cctvX, result);
-            break;
-          case 2:
-          case 4:
-            result = setRight(cctvY, cctvX, result);
-            result = setLeft(cctvY, cctvX, result);
-            break;
+      case 2:
+        for (int i = 0; i < dx.length / 2; i++) {
+          long temp = bit;
+          for (int j = 0; j < 2; j++) {
+            temp = cover(cctvY, cctvX, dy[(i + j * 2) % dx.length], dx[(i + j * 2) % dx.length], temp);
+          }
+          dfs(depth + 1, temp);
         }
         break;
-      }
-      case 3: {
-        switch (direction) {
-          case 1:
-            result = setUp(cctvY, cctvX, result);
-            result = setRight(cctvY, cctvX, result);
-            break;
-          case 2:
-            result = setRight(cctvY, cctvX, result);
-            result = setDown(cctvY, cctvX, result);
-            break;
-          case 3:
-            result = setDown(cctvY, cctvX, result);
-            result = setLeft(cctvY, cctvX, result);
-            break;
-          case 4:
-            result = setLeft(cctvY, cctvX, result);
-            result = setUp(cctvY, cctvX, result);
-            break;
+      case 3:
+        for (int i = 0; i < dx.length; i++) {
+          long temp = bit;
+          for (int j = 0; j < 2; j++) {
+            temp = cover(cctvY, cctvX, dy[(i + j) % dx.length], dx[(i + j) % dx.length], temp);
+          }
+          dfs(depth + 1, temp);
         }
         break;
-      }
-      case 4: {
-        switch (direction) {
-          case 1:
-            result = setUp(cctvY, cctvX, result);
-            result = setRight(cctvY, cctvX, result);
-            result = setLeft(cctvY, cctvX, result);
-            break;
-          case 2:
-            result = setRight(cctvY, cctvX, result);
-            result = setDown(cctvY, cctvX, result);
-            result = setUp(cctvY, cctvX, result);
-            break;
-          case 3:
-            result = setDown(cctvY, cctvX, result);
-            result = setLeft(cctvY, cctvX, result);
-            result = setRight(cctvY, cctvX, result);
-            break;
-          case 4:
-            result = setLeft(cctvY, cctvX, result);
-            result = setUp(cctvY, cctvX, result);
-            result = setDown(cctvY, cctvX, result);
-            break;
+      case 4:
+        for (int i = 0; i < dx.length; i++) {
+          long temp = bit;
+          for (int j = 0; j < 3; j++) {
+            temp = cover(cctvY, cctvX, dy[(i + j) % dx.length], dx[(i + j) % dx.length], temp);
+          }
+          dfs(depth + 1, temp);
         }
         break;
-      }
-      case 5: {
-        result = setUp(cctvY, cctvX, result);
-        result = setRight(cctvY, cctvX, result);
-        result = setDown(cctvY, cctvX, result);
-        result = setLeft(cctvY, cctvX, result);
+      case 5:
+        long temp = bit;
+        for (int i = 0; i < dx.length; i++) {
+          temp = cover(cctvY, cctvX, dy[i], dx[i], temp);
+        }
+        dfs(depth + 1, temp);
         break;
-      }
+    }
+  }
+
+  long cover(int cctvY, int cctvX, int dy, int dx, long bit) {
+    long result = bit;
+    int ny = cctvY + dy;
+    int nx = cctvX + dx;
+    while (isExist(ny, nx) && office[ny][nx] != 6) {
+      result = turnOnBit(result, ny * M + nx);
+      ny += dy;
+      nx += dx;
     }
     return result;
   }
 
-  long setUp(int cctvY, int cctvX, long bit) {
-    long result = bit;
-    for (int y = cctvY; y >= 0; y--) {
-      if (office[y][cctvX] == 6) break;
-      result = turnOnBit(result, y * M + cctvX);
-    }
-    return result;
-  }
-
-  long setRight(int cctvY, int cctvX, long bit) {
-    long result = bit;
-    for (int x = cctvX; x < M; x++) {
-      if (office[cctvY][x] == 6) break;
-      result = turnOnBit(result, cctvY * M + x);
-    }
-    return result;
-  }
-
-  long setDown(int cctvY, int cctvX, long bit) {
-    long result = bit;
-    for (int y = cctvY; y < N; y++) {
-      if (office[y][cctvX] == 6) break;
-      result = turnOnBit(result, y * M + cctvX);
-    }
-    return result;
-  }
-
-  long setLeft(int cctvY, int cctvX, long bit) {
-    long result = bit;
-    for (int x = cctvX; x >= 0; x--) {
-      if (office[cctvY][x] == 6) break;
-      result = turnOnBit(result, cctvY * M + x);
-    }
-    return result;
+  boolean isExist(int y, int x) {
+    return y >= 0 && y < N && x >= 0 && x < M;
   }
 
   long turnOnBit(long bit, int position) {
