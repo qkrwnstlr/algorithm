@@ -1,35 +1,53 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
-  static int[] position;
-  static int N;
-  static int count = 0;
-
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
-    N = sc.nextInt();
-    position = new int[N];
-
-    nQueen(0);
-    System.out.println(count);
+  public static void main(String[] args) throws IOException {
+    new Main().run();
   }
 
-  static void nQueen(int depth) {
-    if (depth == N) {
-      count++;
+  BufferedReader br;
+  StringBuilder sb;
+  int N, result;
+  boolean[] col, left, right;
+
+  void init() throws IOException {
+    result = 0;
+    N = Integer.parseInt(br.readLine());
+    col = new boolean[N];
+    left = new boolean[N * 2 + 1];
+    right = new boolean[N * 2 + 1];
+  }
+
+  void run() throws IOException {
+    br = new BufferedReader(new InputStreamReader(System.in));
+    sb = new StringBuilder();
+
+    init();
+    solution();
+    sb.append(result).append("\n");
+
+    System.out.println(sb);
+
+    br.close();
+  }
+
+  void solution() {
+    nQueen(0);
+  }
+
+  void nQueen(int y) {
+    if (y == N) {
+      result++;
       return;
     }
 
-    for (int i = 0; i < N; i++) {
-      position[depth] = i;
-      if (isPossible(depth)) nQueen(depth + 1);
+    for (int x = 0; x < N; x++) {
+      if (col[x] || left[y - x + N] || right[y + x]) continue;
+      col[x] = left[y - x + N] = right[y + x] = true;
+      nQueen(y + 1);
+      col[x] = left[y - x + N] = right[y + x] = false;
     }
-  }
-
-  static boolean isPossible(int curr) {
-    for (int i = 0; i < curr; i++) {
-      if (position[curr] == position[i] || Math.abs(curr - i) == Math.abs(position[curr] - position[i])) return false;
-    }
-    return true;
   }
 }
