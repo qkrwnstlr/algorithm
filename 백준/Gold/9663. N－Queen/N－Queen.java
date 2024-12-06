@@ -10,14 +10,10 @@ public class Main {
   BufferedReader br;
   StringBuilder sb;
   int N, result;
-  boolean[] col, left, right;
 
   void init() throws IOException {
     result = 0;
     N = Integer.parseInt(br.readLine());
-    col = new boolean[N];
-    left = new boolean[N * 2 + 1];
-    right = new boolean[N * 2 + 1];
   }
 
   void run() throws IOException {
@@ -34,20 +30,26 @@ public class Main {
   }
 
   void solution() {
-    nQueen(0);
+    nQueen(0, 0, 0, 0);
   }
 
-  void nQueen(int y) {
+  void nQueen(int y, int col, int left, int right) {
     if (y == N) {
       result++;
       return;
     }
 
     for (int x = 0; x < N; x++) {
-      if (col[x] || left[y - x + N] || right[y + x]) continue;
-      col[x] = left[y - x + N] = right[y + x] = true;
-      nQueen(y + 1);
-      col[x] = left[y - x + N] = right[y + x] = false;
+      if (isBitOn(col, x) || isBitOn(left, y - x + N) || isBitOn(right, y + x)) continue;
+      nQueen(y + 1, setBitOn(col, x), setBitOn(left, y - x + N), setBitOn(right, y + x));
     }
+  }
+
+  boolean isBitOn(int bit, int index) {
+    return (bit & (1 << index)) > 0;
+  }
+
+  int setBitOn(int bit, int index) {
+    return bit | (1 << index);
   }
 }
