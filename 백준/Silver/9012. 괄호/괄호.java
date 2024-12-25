@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -10,40 +9,33 @@ public class Main {
   }
 
   BufferedReader br;
-  StringBuilder sb;
+  StringBuilder result;
   int N;
-  String input, result;
-
-  void init() throws IOException {
-    input = br.readLine();
-  }
 
   void run() throws IOException {
     br = new BufferedReader(new InputStreamReader(System.in));
-    sb = new StringBuilder();
+    result = new StringBuilder();
 
-    N = Integer.parseInt(br.readLine());
-
-    for (int i = 0; i < N; i++) {
-      init();
-      solution();
-      sb.append(result).append("\n");
-    }
-
-    System.out.println(sb);
+    init();
+    solution();
+    System.out.println(result);
 
     br.close();
   }
 
-  void solution() {
-    Stack<String> stack = new Stack<>();
-    Arrays.stream(input.split("")).forEach(it -> {
-      if (!stack.isEmpty() && stack.peek().equals("(") && it.equals(")")) {
-        stack.pop();
-      } else {
-        stack.push(it);
+  void init() throws IOException {
+    N = Integer.parseInt(br.readLine());
+  }
+
+  void solution() throws IOException {
+    for (int i = 0; i < N; i++) {
+      String input = br.readLine();
+      ArrayDeque<Character> stack = new ArrayDeque<>();
+      for (int j = 0; j < input.length(); j++) {
+        if (input.charAt(j) == ')' && !stack.isEmpty() && stack.peek() == '(') stack.pop();
+        else stack.push(input.charAt(j));
       }
-    });
-    result = stack.isEmpty() ? "YES" : "NO";
+      result.append(stack.isEmpty() ? "YES" : "NO").append("\n");
+    }
   }
 }
