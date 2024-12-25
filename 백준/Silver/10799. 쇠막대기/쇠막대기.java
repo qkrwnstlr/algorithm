@@ -1,7 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -9,41 +9,36 @@ public class Main {
   }
 
   BufferedReader br;
-  StringBuilder sb;
-  int result;
+  StringBuilder result;
   String input;
-
-  void init() throws IOException {
-    result = 0;
-    input = br.readLine();
-  }
 
   void run() throws IOException {
     br = new BufferedReader(new InputStreamReader(System.in));
-    sb = new StringBuilder();
+    result = new StringBuilder();
 
     init();
     solution();
-    sb.append(result);
-
-    System.out.println(sb);
+    System.out.println(result);
 
     br.close();
   }
 
+  void init() throws IOException {
+    input = br.readLine();
+  }
+
   void solution() {
-    Stack<Character> stack = new Stack<>();
-    stack.push(input.charAt(0));
-    for (int i = 1; i < input.length(); i++) {
-      char before = input.charAt(i - 1);
-      char current = input.charAt(i);
-      if (!stack.isEmpty() && stack.peek() == '(' && current == ')') {
+    int count = 0;
+    ArrayDeque<Character> stack = new ArrayDeque<>();
+    for (int j = 0; j < input.length(); j++) {
+      if (input.charAt(j) == ')') {
         stack.pop();
-        if (before == '(') result += stack.size();
-        else result++;
+        if (input.charAt(j - 1) == '(') count += stack.size();
+        else count++;
       } else {
-        stack.push(current);
+        stack.push(input.charAt(j));
       }
     }
+    result.append(count);
   }
 }
