@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -11,7 +9,8 @@ public class Main {
   }
 
   BufferedReader br;
-  int N, result;
+  int N, result, totalSum;
+  int[] rowSum, columnSum;
   int[][] table;
 
   void run() throws IOException {
@@ -28,35 +27,30 @@ public class Main {
     result = Integer.MAX_VALUE;
     N = Integer.parseInt(br.readLine());
     table = new int[N][N];
-    for (int i = 0; i < N; i++) table[i] = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+    for (int i = 0; i < N; i++)
+      table[i] = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
   }
 
   void solution() {
-    combination(0, 0);
+    totalSum = 0;
+    rowSum = new int[N];
+    columnSum = new int[N];
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        totalSum += table[i][j];
+        rowSum[i] += table[i][j];
+        columnSum[j] += table[i][j];
+      }
+    }
+    combination(totalSum, 0);
   }
 
-  void combination(int bit, int depth) {
+  void combination(int totalSum, int depth) {
     if (depth == N) {
-      List<Integer> star = new ArrayList<>(), link = new ArrayList<>();
-      for (int i = 0; i < N; i++) {
-        if (bit % 2 == 1) star.add(i);
-        else link.add(i);
-        bit /= 2;
-      }
-      result = Math.min(result, Math.abs(getSum(star) - getSum(link)));
+      result = Math.min(result, Math.abs(totalSum));
       return;
     }
-    combination(bit | (1 << depth), depth + 1);
-    combination(bit, depth + 1);
-  }
-
-  int getSum(List<Integer> list) {
-    int sum = 0;
-    for (int i = 0; i < list.size(); i++) {
-      for (int j = i + 1; j < list.size(); j++) {
-        sum += table[list.get(i)][list.get(j)] + table[list.get(j)][list.get(i)];
-      }
-    }
-    return sum;
+    combination(totalSum - rowSum[depth] - columnSum[depth], depth + 1);
+    combination(totalSum, depth + 1);
   }
 }
