@@ -69,13 +69,13 @@ class Graph {
     distance[index] = 0;
 
     while (!pq.isEmpty()) {
-      int current = pq.poll().index;
-      if (visited[current]) continue;
-      visited[current] = true;
+      Node current = pq.poll();
+      if (current.weight > distance[current.index]) continue;
+      visited[current.index] = true;
 
-      vertices[current].edges.forEach(next -> {
-        if (!visited[next.index] && distance[next.index] > distance[current] + next.weight) {
-          distance[next.index] = distance[current] + next.weight;
+      vertices[current.index].edges.forEach(next -> {
+        if (distance[next.index] > distance[current.index] + next.weight) {
+          distance[next.index] = distance[current.index] + next.weight;
           pq.add(new Node(next.index, distance[next.index]));
         }
       });
