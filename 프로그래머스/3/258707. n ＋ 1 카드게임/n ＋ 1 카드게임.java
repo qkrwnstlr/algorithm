@@ -4,12 +4,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 class Solution {
-  public static void main(String[] args) {
-    int coin = 4;
-    int[] cards = {3, 6, 7, 2, 1, 10, 5, 9, 8, 12, 11, 4};
-    System.out.println(new Solution().solution(coin, cards));
-  }
-
   public int solution(int coin, int[] cards) {
     init(coin, cards);
     play();
