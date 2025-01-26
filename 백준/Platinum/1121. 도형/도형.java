@@ -34,7 +34,7 @@ public class Main {
 
   void solution() {
     Arrays.sort(arr);
-    int max = Math.min(50001, Arrays.stream(arr).sum() + 1) + 1;
+    int max = Math.min(50001, Arrays.stream(arr).sum()) + 1;
     int[][][] dp = new int[N + 1][K + 1][max];
 
     for (int i = 1; i <= N; i++) {
