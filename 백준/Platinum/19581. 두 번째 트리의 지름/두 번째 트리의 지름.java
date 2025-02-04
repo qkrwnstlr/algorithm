@@ -36,17 +36,11 @@ public class Main {
   }
 
   void solution() {
-    Set<Integer> excludes = new HashSet<>();
+    Edge f1 = nodePool.getFarthestNode(1, 0);
+    Edge f2 = nodePool.getFarthestNode(f1.index, 0);
 
-    Edge f1 = nodePool.getFarthestNode(1, excludes);
-    Edge f2 = nodePool.getFarthestNode(f1.index, excludes);
-
-    excludes.add(f2.index);
-    Edge f3 = nodePool.getFarthestNode(f1.index, excludes);
-
-    excludes.remove(f2.index);
-    excludes.add(f1.index);
-    Edge f4 = nodePool.getFarthestNode(f2.index, excludes);
+    Edge f3 = nodePool.getFarthestNode(f1.index, f2.index);
+    Edge f4 = nodePool.getFarthestNode(f2.index, f1.index);
 
     result = Math.max(f3.distance, f4.distance);
   }
@@ -65,7 +59,7 @@ class NodePool {
     nodes[to].addEdge(from, distance);
   }
 
-  Edge getFarthestNode(int from, Set<Integer> excludes) {
+  Edge getFarthestNode(int from, int exclude) {
     boolean[] visited = new boolean[nodes.length];
 
     Queue<Edge> queue = new ArrayDeque<>();
@@ -73,6 +67,7 @@ class NodePool {
     Edge result = new Edge(from, 0);
     queue.add(result);
     visited[from] = true;
+    visited[exclude] = true;
 
     while (!queue.isEmpty()) {
       Edge current = queue.poll();
@@ -81,7 +76,7 @@ class NodePool {
       List<Edge> edges = nodes[current.index].edges;
       for (int i = 0; i < edges.size(); i++) {
         Edge next = edges.get(i);
-        if (!excludes.contains(next.index) && !visited[next.index]) {
+        if (!visited[next.index]) {
           queue.add(new Edge(next.index, current.distance + next.distance));
           visited[next.index] = true;
         }
