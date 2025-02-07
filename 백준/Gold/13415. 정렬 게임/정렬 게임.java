@@ -48,6 +48,8 @@ public class Main {
       if (deque.isEmpty() || deque.getLast().isAsc) deque.addLast(new Node(B, false));
     }
 
+    deque.add(new Node(0, true));
+
     Node before = deque.removeFirst();
     int ascIndex = before.index - 1, descIndex = 0;
 
@@ -62,12 +64,6 @@ public class Main {
         for (int i = before.index - 1; i >= current.index; i--) result[i] = arr[descIndex++];
       }
       before = current;
-    }
-
-    if (before.isAsc) {
-      for (int i = before.index - 1; i >= 0; i--) result[i] = arr[ascIndex--];
-    } else {
-      for (int i = before.index - 1; i >= 0; i--) result[i] = arr[descIndex++];
     }
   }
 }
