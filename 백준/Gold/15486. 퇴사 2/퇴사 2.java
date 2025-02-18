@@ -1,21 +1,43 @@
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
   public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    int N = Integer.parseInt(br.readLine());
-    int[][] schedule = new int[N][2];
-    for(int i = 0; i < N; i++) {
-      String[] read = br.readLine().split(" ");
-      schedule[i][0] = Integer.parseInt(read[0]);
-      schedule[i][1] = Integer.parseInt(read[1]);
+    new Main().run();
+  }
+
+  BufferedReader br;
+  int N, result;
+
+  void run() throws IOException {
+    br = new BufferedReader(new InputStreamReader(System.in));
+
+    init();
+    solution();
+    printResult();
+
+    br.close();
+  }
+
+  void init() throws IOException {
+    N = Integer.parseInt(br.readLine());
+  }
+
+  void printResult() {
+    System.out.println(result);
+  }
+
+  void solution() throws IOException {
+    int[] dp = new int[N + 1];
+    for (int i = 0; i < N; i++) {
+      StringTokenizer st = new StringTokenizer(br.readLine());
+      int t = Integer.parseInt(st.nextToken()), w = Integer.parseInt(st.nextToken());
+      if (i + t <= N) dp[i + t] = Math.max(dp[i + t], dp[i] + w);
+      dp[i + 1] = Math.max(dp[i + 1], dp[i]);
     }
-    int[] moneyList = new int[N + 1];
-    for(int i = 0; i < N; i++) {
-      if(i + schedule[i][0] <= N) moneyList[i + schedule[i][0]] = Math.max(moneyList[i + schedule[i][0]], moneyList[i] + schedule[i][1]);
-      moneyList[i + 1] = Math.max(moneyList[i + 1], moneyList[i]);
-    }
-    System.out.println(moneyList[N]);
+
+    result = dp[N];
   }
 }
