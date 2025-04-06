@@ -10,7 +10,7 @@ public class Main {
 
   BufferedReader br;
   int N, K;
-  int[] sides;
+  long[] sides;
   List<PriorityQueue<Integer>> cards;
   StringBuilder result;
 
@@ -22,7 +22,7 @@ public class Main {
     K = Integer.parseInt(st.nextToken());
 
     st = new StringTokenizer(br.readLine());
-    sides = new int[4];
+    sides = new long[4];
     for (int i = 0; i < 4; i++) sides[i] = Integer.parseInt(st.nextToken());
 
     cards = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Main {
     for (int i = 0; i < K; i++) {
       int maxI = 0;
       for (; maxI < 4 && cards.get(maxI).isEmpty(); maxI++) ;
-      for (int j = maxI; j < 4; j++) {
+      for (int j = maxI + 1; j < 4; j++) {
         if (cards.get(j).isEmpty()) continue;
         if (cards.get(maxI).peek() * sides[j] < cards.get(j).peek() * sides[maxI]) maxI = j;
       }
