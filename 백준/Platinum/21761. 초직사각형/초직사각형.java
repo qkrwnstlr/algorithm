@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -14,7 +11,7 @@ public class Main {
   BufferedReader br;
   int N, K;
   int[] sides;
-  List<List<Integer>> cards;
+  List<PriorityQueue<Integer>> cards;
   StringBuilder result;
 
   void init() throws IOException {
@@ -29,12 +26,11 @@ public class Main {
     for (int i = 0; i < 4; i++) sides[i] = Integer.parseInt(st.nextToken());
 
     cards = new ArrayList<>();
-    for (int i = 0; i < 4; i++) cards.add(new ArrayList<>());
+    for (int i = 0; i < 4; i++) cards.add(new PriorityQueue<>(Comparator.reverseOrder()));
     for (int i = 0; i < N; i++) {
       st = new StringTokenizer(br.readLine());
       cards.get(st.nextToken().charAt(0) - 'A').add(Integer.parseInt(st.nextToken()));
     }
-    for (int i = 0; i < 4; i++) cards.get(i).sort(Collections.reverseOrder());
   }
 
   void run() throws IOException {
@@ -52,30 +48,16 @@ public class Main {
   }
 
   void solution() {
-    int[] points = new int[4];
     for (int i = 0; i < K; i++) {
       int maxI = 0;
-      long maxV = 0;
-      for (int j = 0; j < 4; j++) {
-        if (points[j] >= cards.get(j).size()) continue;
-        long volume = cards.get(j).get(points[j]) * getVolume(i);
-        if (volume > maxV) {
-          maxV = volume;
-          maxI = j;
-        }
+      for (; maxI < 4 && cards.get(maxI).isEmpty(); maxI++) ;
+      for (int j = maxI; j < 4; j++) {
+        if (cards.get(j).isEmpty()) continue;
+        if (cards.get(maxI).peek() * sides[j] < cards.get(j).peek() * sides[maxI]) maxI = j;
       }
-      sides[maxI] += cards.get(maxI).get(points[maxI]);
-      result.append((char) ('A' + maxI)).append(" ").append(cards.get(maxI).get(points[maxI])).append("\n");
-      points[maxI]++;
+      int delta = cards.get(maxI).poll();
+      sides[maxI] += delta;
+      result.append((char) ('A' + maxI)).append(" ").append(delta).append("\n");
     }
-  }
-
-  long getVolume(int excludeI) {
-    long result = 1;
-    for (int i = 0; i < 4; i++) {
-      if (i == excludeI) continue;
-      result *= sides[i];
-    }
-    return result;
   }
 }
