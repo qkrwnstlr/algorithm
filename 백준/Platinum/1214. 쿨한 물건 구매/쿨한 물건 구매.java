@@ -44,11 +44,25 @@ public class Main {
       Q = temp;
     }
 
-    int min = P;
-    for (int i = 0; i <= Math.min(D / P, Q); i++) {
-      min = Math.min(min, (Q - (D - P * i) % Q) % Q);
+    int answer = Integer.MAX_VALUE;
+
+    // P를 i번 사용해서 만든 금액 = P * i
+    for (int i = 0; i <= Math.min(D / P + 1, Q); i++) {
+      int pTotal = P * i;
+      int remain = D - pTotal;
+
+      // Q로 나눠떨어지지 않으면 Q로 나눠떨어지는 가장 가까운 큰 수로 올려줌
+      int qTotal = 0;
+      if (remain > 0) {
+        qTotal = (remain + Q - 1) / Q * Q;
+      }
+
+      int total = pTotal + qTotal;
+      if (total >= D) {
+        answer = Math.min(answer, total);
+      }
     }
-    min = Math.min(min, (P - (D % P)) % P);
-    result = D + min;
+
+    result = answer;
   }
 }
