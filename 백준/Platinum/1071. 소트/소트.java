@@ -49,6 +49,7 @@ public class Main {
 
         if (count.getOrDefault(i + 1, 0) > 0) {
           boolean done = false;
+
           for (int j : count.tailMap(i + 2).keySet()) {
             if (count.get(j) > 0) {
               left -= add(i, count.get(i));
@@ -59,7 +60,7 @@ public class Main {
           }
 
           if (!done) {
-            left -= add(i + 1, 1);
+            left -= add(i + 1, count.get(i + 1));
           }
         } else {
           left -= add(i, count.get(i));
